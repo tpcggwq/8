@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Lock } from 'lucide-react';
 
+// Basit cookie helper fonksiyonları
+const setCookie = (name: string, value: string, minutes: number) => {
+  const expires = new Date(Date.now() + minutes * 60 * 1000).toUTCString();
+  document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+};
+
+const getCookie = (name: string) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift();
+  return null;
+};
+
 interface PasswordFormProps {
   onAuthenticate: (success: boolean) => void;
 }
@@ -11,8 +24,8 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onAuthenticate }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user was previously authenticated
-    const isAuthenticated = localStorage.getItem('sakura_authenticated');
+    // Daha önce cookie ayarlanmış mı kontrol et
+    const isAuthenticated = getCookie('sakura_authenticated');
     if (isAuthenticated === 'true') {
       onAuthenticate(true);
     }
@@ -23,11 +36,11 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onAuthenticate }) => {
     setIsLoading(true);
     setError('');
 
-    // Simulate loading for better UX
+    // loading efekti
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (password === '03.01.2025') {
-      localStorage.setItem('sakura_authenticated', 'true');
+      setCookie('sakura_authenticated', 'true', 60); // 60 dk geçerli
       onAuthenticate(true);
     } else {
       setError('Yanlış şifre! İpucu: çıkma tarihimiz :)');
@@ -39,7 +52,7 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onAuthenticate }) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
-      {/* Background hearts animation for login screen */}
+      {/* Background hearts */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {[...Array(8)].map((_, i) => (
           <div
