@@ -40,7 +40,7 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onAuthenticate }) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (password === '03.01.2025') {
-      setCookie('sakura_authenticated', 'true', 60); // 60 dk geçerli
+      setCookie('sakura_authenticated', 'true', 5); // 60 dk geçerli
       onAuthenticate(true);
     } else {
       setError('Yanlış şifre! İpucu: çıkma tarihimiz :)');
