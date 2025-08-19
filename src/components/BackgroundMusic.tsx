@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect, useRef } from 'react';
 
 interface BackgroundMusicProps {
   play: boolean;
@@ -9,19 +9,25 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ play }) => {
 
   useEffect(() => {
     if (play && audioRef.current) {
-      audioRef.current.play().catch((err) => {
-        console.log("Autoplay engellendi:", err);
-      });
+      const playAudio = async () => {
+        try {
+          await audioRef.current!.play();
+        } catch (err) {
+          console.warn("Otomatik çalma engellendi, kullanıcı etkileşimi bekleniyor.");
+        }
+      };
+      playAudio();
     } else if (!play && audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.currentTime = 0; // başa sar
     }
   }, [play]);
 
   return (
     <audio ref={audioRef} loop>
+      {/* mp4 dosyasını direkt ses kaynağı olarak kullanıyoruz */}
+      <source src="/music.mp4" type="audio/mp4" />
       <source src="/music.mp3" type="audio/mpeg" />
-      Tarayıcınız ses dosyasını desteklemiyor.
+      Tarayıcınız ses oynatmayı desteklemiyor.
     </audio>
   );
 };
